@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Birthday Matrix</title>
+<style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+    font-family: monospace;
+  }
+  canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 80px; /* Adjusted for better fit */
+    color: #ff4da6;
+    font-weight: bold;
+    text-shadow: 0 0 20px #ff4da6, 0 0 40px #ff4da6;
+    letter-spacing: 10px;
+    text-align: center;
+    pointer-events: none;
+  }
+  .name {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+    color: #ff99cc;
+    letter-spacing: 5px;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="matrix"></canvas>
+
+<div class="center-text">HAPPY BIRTHDAY</div>
+<div class="name">SITI NUR AIN</div>
+
+<script>
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.height = window.innerHeight;
+canvas.width = window.innerWidth;
+
+// The phrase we want to spell out
+const phrase = "HAPPY BIRTHDAY PRETTY "; 
+const fontSize = 16;
+const columns = canvas.width / fontSize;
+
+// Create an array of drops - one per column
+// Each drop now tracks its vertical Y position AND its current letter index
+const drops = [];
+for (let x = 0; x < columns; x++) {
+  drops[x] = {
+    y: Math.random() * -100, // Start at random heights above the screen
+    charIndex: Math.floor(Math.random() * phrase.length) // Start at a random letter in the phrase
+  };
+}
+
+function draw() {
+  // Semi-transparent black rectangle to create the trail effect
+  ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#ff4da6"; // Neon Pink
+  ctx.font = fontSize + "px monospace";
+
+  for (let i = 0; i < drops.length; i++) {
+    // Get the specific character for this step in the sequence
+    const text = phrase[drops[i].charIndex];
+    
+    // Draw the character
+    ctx.fillText(text, i * fontSize, drops[i].y * fontSize);
+
+    // Reset drop to top if it goes off screen
+    if (drops[i].y * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i].y = 0;
+    }
+
+    // Move the drop down
+    drops[i].y++;
+    
+    // Move to the next letter in the phrase for the next frame
+    drops[i].charIndex++;
+    if (drops[i].charIndex >= phrase.length) {
+      drops[i].charIndex = 0; // Loop back to the start of the word
+    }
+  }
+}
+
+// Adjusted speed for readability (33ms to 50ms)
+setInterval(draw, 50);
+
+// Resize handler to keep it fullscreen
+window.addEventListener('resize', () => {
+  canvas.height = window.innerHeight;
+  canvas.width = window.innerWidth;
+});
+</script>
+
+</body>
+</html>
